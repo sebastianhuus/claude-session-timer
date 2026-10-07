@@ -1,0 +1,5 @@
+{
+  "name": "session-timer",
+  "version": "0.1.0",
+  "description": "Session countdown with Pomodoro-style legs: status line, hidden time line for Claude, sound and toast at leg boundaries, leg log."
+}

@@ -11,14 +11,14 @@ const MIN = 60_000
 let logPath: string | undefined
 const BLINK_MS = 6_000
 const SOUND = '/System/Library/Sounds/Glass.aiff'
-const USAGE = 'Usage: /session 45 | 22:00 | 10pm | until 22:00 | tomorrow 9:00 | status | stop | note <text> | help'
+const USAGE = 'Usage: /session 45 | 22:00 | 10pm | until 22:00 | tomorrow 9:00 | status | stop | end | quit | note <text> | help'
 const HELP = [
   'session-timer commands:',
   '  /session <minutes | time> [focus=N] [break=M]   start (focus default 25, break default 5)',
   '      shorthands: f=N for focus, b=M (or breaks=M) for break',
   '      durations take units: 30s, 90s, 5m, 1.5h (a bare number is minutes)',
   '      examples: /session 45   /session 22:00   /session 10pm   /session 3 f=1 b=1',
-  '  /session status | stop | note <text> | help',
+  '  /session status | stop (or end, quit) | note <text> | help',
   'focus/break values must be written with the name; a bare second number is not read.',
 ].join('\n')
 
@@ -156,7 +156,7 @@ async function tick($: Dollar) {
   // Announce every leg whose end has passed since the last tick.
   while (s.announced < s.legs.length && now >= s.legs[s.announced].endMs) {
     const leg = s.legs[s.announced++]
-    await logLeg($, leg, leg.endMs)
+    await logLeg($, leg, leg.endMs).catch(() => undefined) // logging must never block the alert
     const up = s.legs[s.announced]
     void $.process.run(['afplay', SOUND]).catch(() => undefined) // macOS only; nothing bundled
     void $.ui.toast(up ? `${up.kind === 'break' ? 'Break' : 'Focus'}: ${Math.round((up.endMs - up.startMs) / MIN)} min` : 'Session over')
@@ -199,10 +199,10 @@ export const register: Register = on => {
       return { text: line ?? 'No active session. Try /session 45 or /session 22:00. /session help lists everything.' }
     }
 
-    if (args === 'stop') {
+    if (['stop', 'end', 'quit'].includes(args.toLowerCase())) {
       if (!s) return { text: 'No active session.' }
       const d = describe(s, now)
-      if (d) await logLeg($, d.leg, now)
+      if (d) await logLeg($, d.leg, now).catch(() => undefined)
       await $.store.delete('session')
       $.ui.status(undefined)
       return { text: 'Session stopped.' }

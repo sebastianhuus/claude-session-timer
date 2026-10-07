@@ -21,7 +21,7 @@ Mods are not sandboxed. Read `hooks/register.ts` (one file) before installing.
 /session 45                 start a 45-minute session
 /session 22:00              end at 22:00 (also 10pm, 9:40pm, until 22:00, tomorrow 9:00)
 /session 3 f=1 b=1          legs: focus f= and break b= (default 25 / 5); units: 30s, 5m, 1.5h
-/session status | stop | note <text> | help
+/session status | stop (or end, quit) | note <text> | help
 ```
 
 A session of 25 minutes or less is a single focus leg. Otherwise focus and break legs

@@ -39,7 +39,9 @@ focus leg before it (45 min = 25 focus, 5 break, 15 focus).
   (`at`, `kind`, `plannedMin`, `actualMin`, optional `note` from `/session note`).
 
 State is stored as absolute timestamps in the host's store, so reloads and restarts keep the
-session. The sound and desktop-side details are macOS/terminal oriented; untested elsewhere.
+session. The sound is macOS only (`afplay`). On Linux and Windows the mod still works and the toast and
+flash still show, but there is no sound, and on Windows the leg log is probably skipped too
+(untested; failures are ignored, never fatal).
 
 ## Develop
 
